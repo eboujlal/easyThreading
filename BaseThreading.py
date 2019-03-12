@@ -15,6 +15,11 @@ class BaseThreading:
     __metaclass__ = ABCMeta
 
     def __init__(self, raw_list, number_of_threads=4):
+        """
+            raw_list : target list that you want to handle it using multithreading
+            number_of_thrading : Caution! pay attention to your computer threads
+        """
+
         self.raw_list = raw_list
         self.num_rows = len(list(raw_list))
         self.rowsQueue = Queue()
@@ -25,10 +30,17 @@ class BaseThreading:
         self.loop = asyncio.get_event_loop()
 
     @abstractmethod
-    def process(self, row):
+    def process(self, element):
+        """
+            You need to re implement this fonction which will contains the actions on your list.
+            element : element from your list
+        """
         pass
 
     def start(self):
+        """
+            This function will let you start all the created threads
+        """
         asyncio.set_event_loop(asyncio.new_event_loop())
         self.progress(self.counter, self.num_rows, self.counter)
         self.create_jobs()
@@ -36,6 +48,9 @@ class BaseThreading:
         self.summary()
 
     def work(self):
+        """
+            This is the work function which dispatch elements of your list on threads, and manage lock and threading issues.
+        """
         while not self.dead and not self.rowsQueue.empty():
             #Get the first
             row = self.rowsQueue.get()
@@ -48,6 +63,9 @@ class BaseThreading:
             #Wait for 50ms
 
     def create_workers(self):
+        """
+            This function gonna create all the threads.
+        """
         #Loop to create the threads
         for i in range(self.number_of_threads):
             #Initiate a thread and associate it with work function
@@ -61,11 +79,18 @@ class BaseThreading:
             worker.join()
 
     def create_jobs(self):
+        """
+        This function gonna prepare your raw list; it will transform it into a queue.
+        """
         for row in self.raw_list:
             self.rowsQueue.put(row)
         #self.rowsQueue.join()
 
     def summary(self):
+
+        """
+        This function contains some stats about the whole operation on your list.
+        """
         finished_at = time.time()
         dt1 = datetime.datetime.fromtimestamp(
             self.start_at)  # 1973-11-29 22:33:09
