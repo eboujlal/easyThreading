@@ -14,7 +14,7 @@ thrlock = threading.Lock()
 class BaseThreading:
     __metaclass__ = ABCMeta
 
-    def __init__(self, raw_list, number_of_threads=4):
+    def __init__(self, raw_list, number_of_threads=4,options={}):
         """
             raw_list : target list that you want to handle it using multithreading
             number_of_thrading : Caution! pay attention to your computer threads
@@ -24,6 +24,7 @@ class BaseThreading:
         self.num_rows = len(list(raw_list))
         self.rowsQueue = Queue()
         self.number_of_threads = number_of_threads
+        self.options = options
         self.dead = False
         self.counter = 0
         self.start_at = time.time()
